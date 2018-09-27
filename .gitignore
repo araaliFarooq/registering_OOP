@@ -1,3 +1,4 @@
 .vscode/       
 env/
-        
+app/*.pyc
+app/modals/*.pyc 
