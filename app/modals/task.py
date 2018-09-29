@@ -62,8 +62,11 @@ class Task:
     @staticmethod
     def delete_all_tasks(owner):
         if len(todo_list) > 0:
-            # del todo_list[:]
-            list2 = [task for task in todo_list if task.get('owner', '') != owner]
-            return list2
+            for tsk in range(len(todo_list)):
+                if todo_list[tsk]["owner"] == owner:
+                    print("i am here")
+                    del todo_list[tsk]
+                    return True
+                return False
         return False
 

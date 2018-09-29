@@ -66,6 +66,7 @@ def login():
 @jwt_required
 def delete_account():
     logged_user = get_jwt_identity()
+    password = None
     for user in range(len(accounts)):
         if accounts[user]["username"] == logged_user:
             password = accounts[user]["password"]
@@ -120,10 +121,12 @@ def delete_single_task(task_id):
 def delete_all_tasks():
     logged_user = get_jwt_identity()
     list2 = Task.delete_all_tasks(owner=logged_user)
+    print(list2)
     if list2:
         return jsonify({"message": "Your tasks successfully deleted", "Remaining Tasks":[     
-            task.__dict__ for task in list2
+            task for task in todo_list
         ]}), 200
+    return jsonify({"message": "Tasks not deleted or list is empty"}),400  
 
 @app.route("/api/tasks/finish/<task_id>", methods=["PUT"])
 @jwt_required
@@ -135,7 +138,7 @@ def finish_a_task(task_id):
     finish_task = Task.mark_as_finished(int(task_id))
     if finish_task:
         return jsonify({"message": "Task successfully finished", "Updated Tasks":[     
-            task.__dict__ for task in todo_list
+            task for task in todo_list
         ]}), 200
     return jsonify({"message": "Task not finished or doesn't exist"}), 400         
 

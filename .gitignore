@@ -1,4 +1,10 @@
 .vscode/       
 env/
 app/*.pyc
-app/modals/*.pyc 
+app/modals/*.pyc
+.coverage
+tests/*.pyc
+tests/__pycache__/*.pyc
+_pycache__/*.pyc
+app/__pycache__/*.pyc
+run.pyc
