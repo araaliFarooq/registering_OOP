@@ -1,5 +1,5 @@
 todo_list = []
-deleted_items = []
+deleted_tasks = []
 
 class Task:
     def __init__(self, task_id, title, owner, status):
@@ -29,7 +29,7 @@ class Task:
             for tsk in range(len(todo_list)):
                 if todo_list[tsk]["task_id"] == int(task_id) and todo_list[tsk]["owner"] == owner:
                     deleted_task = dict(task_id = todo_list[tsk]["task_id"], title = todo_list[tsk]["title"], owner = todo_list[tsk]["owner"], status = todo_list[tsk]["status"])
-                    deleted_items.append(deleted_task)
+                    deleted_tasks.append(deleted_task)
                     del todo_list[tsk]
                     return True
                 return False
@@ -60,9 +60,10 @@ class Task:
         return False    
 
     @staticmethod
-    def delete_all_tasks():
+    def delete_all_tasks(owner):
         if len(todo_list) > 0:
-            del todo_list[:]
-            return True
+            # del todo_list[:]
+            list2 = [task for task in todo_list if task.get('owner', '') != owner]
+            return list2
         return False
 
