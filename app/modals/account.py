@@ -5,11 +5,7 @@ class User:
         self.username = username
         self.email = email
         self.password = password
-
-    # method to enable us acess class attributes as items 
-    def __getitem__(self,item):
-        return getattr(self, item) 
-    
+        
     def add_account(self):
         new_user = dict(
             username = self.username,
@@ -32,25 +28,25 @@ class User:
             return False
         return False
 
-    @staticmethod
-    def change_password(username, old_password, new_password):
-        for account in range(len(accounts)):
-            if accounts[account]["username"] == username:
-                if accounts[account]["password"] == old_password:
-                    accounts[account]["password"] = new_password
-                    return True
-                return False
-            return False
+    # @staticmethod
+    # def change_password(username, old_password, new_password):
+    #     for account in range(len(accounts)):
+    #         if accounts[account]["username"] == username:
+    #             if accounts[account]["password"] == old_password:
+    #                 accounts[account]["password"] = new_password
+    #                 return True
+    #             return False
+    #         return False
 
-    @staticmethod
-    def change_email(username, password, new_email):
-        for account in range(len(accounts)):
-            if accounts[account]["username"] == username:
-                if accounts[account]["password"] == password:
-                    accounts[account]["email"] = new_email
-                    return True
-                return False
-            return False
+    # @staticmethod
+    # def change_email(username, password, new_email):
+    #     for account in range(len(accounts)):
+    #         if accounts[account]["username"] == username:
+    #             if accounts[account]["password"] == password:
+    #                 accounts[account]["email"] = new_email
+    #                 return True
+    #             return False
+    #         return False
 
     @staticmethod
     def delete_account(username, password):
@@ -60,7 +56,8 @@ class User:
                     del accounts[account]
                     return True
                 return False
-        return False         
+        return False
+          
 
 
 
