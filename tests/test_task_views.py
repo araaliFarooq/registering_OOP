@@ -27,6 +27,44 @@ class Test_Task_Views(unittest.TestCase):
         self.assertIn(("General cleaning"),reply2.get("New task Created").values())                   
         self.assertEquals(response3.status_code, 201)
 
+    def test_add_task_with_impromper_title(self):
+        response = self.app.post("/api/users/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )
+        reply2 = json.loads(response.data.decode())                   
+        response2 = self.app.post("/api/users/login",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )
+        reply = json.loads(response2.data.decode())                      
+        response3 = self.app.post("/api/tasks/add",
+                                content_type='application/json', headers=dict(Authorization='Bearer '+reply['access_token']),
+                                data=json.dumps(dict(title="  General cleaning"),)   
+                            )
+        reply2 = json.loads(response3.data.decode())
+        self.assertEquals(reply2.get("message"), "title must have no white spaces")                   
+        self.assertEquals(response3.status_code, 400)
+
+    def test_add_task_with_empty_title(self):
+        response = self.app.post("/api/users/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )
+        reply2 = json.loads(response.data.decode())                   
+        response2 = self.app.post("/api/users/login",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )
+        reply = json.loads(response2.data.decode())                      
+        response3 = self.app.post("/api/tasks/add",
+                                content_type='application/json', headers=dict(Authorization='Bearer '+reply['access_token']),
+                                data=json.dumps(dict(title="  "),)   
+                            )
+        reply2 = json.loads(response3.data.decode())
+        self.assertEquals(reply2.get("message"), "No title was given")                   
+        self.assertEquals(response3.status_code, 400)        
+
     def test_delete_a_task(self):
         response = self.app.post("/api/users/register",
                                  content_type='application/json',
@@ -135,6 +173,26 @@ class Test_Task_Views(unittest.TestCase):
         self.assertEquals(reply2.get("message"), "Task successfully finished")
         self.assertEquals(response3.status_code, 200)
 
+    def test_finish_user_task_with_impromper_id(self):
+        response = self.app.post("/api/users/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )
+        reply2 = json.loads(response.data.decode())                   
+        response2 = self.app.post("/api/users/login",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )
+        reply = json.loads(response2.data.decode())                  
+        response3 = self.app.post("/api/tasks/add",
+                                content_type='application/json', headers=dict(Authorization='Bearer '+reply['access_token']),
+                                data=json.dumps(dict(title="General cleaning"),)   
+                            )
+        response3 = self.app.put("/api/tasks/finish/a",content_type='application/json', headers=dict(Authorization="Bearer "+reply["access_token"]))
+        reply2 = json.loads(response3.data.decode())
+        self.assertEquals(reply2.get("message"), "Input should be an interger")
+        self.assertEquals(response3.status_code, 400)    
+
     def test_finish_user_task_failure(self):
         response = self.app.post("/api/users/register",
                                  content_type='application/json',
@@ -153,6 +211,66 @@ class Test_Task_Views(unittest.TestCase):
         response3 = self.app.put("/api/tasks/finish/6",content_type='application/json', headers=dict(Authorization="Bearer "+reply["access_token"]))
         reply2 = json.loads(response3.data.decode())
         self.assertEquals(reply2.get("message"), "Task not finished or doesn't exist")
-        self.assertEquals(response3.status_code, 400)         
+        self.assertEquals(response3.status_code, 400)
+
+    def test_unfinish_user_task(self):
+        response = self.app.post("/api/users/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )                  
+        response2 = self.app.post("/api/users/login",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )
+        reply = json.loads(response2.data.decode())                  
+        response3 = self.app.post("/api/tasks/add",
+                                content_type='application/json', headers=dict(Authorization='Bearer '+reply['access_token']),
+                                data=json.dumps(dict(title="General cleaning"),)   
+                            )
+        response3 = self.app.put("/api/tasks/finish/2",content_type='application/json', headers=dict(Authorization="Bearer "+reply["access_token"]))
+        response4 = self.app.put("/api/tasks/unfinish/2",content_type='application/json', headers=dict(Authorization="Bearer "+reply["access_token"]))
+        reply3 = json.loads(response4.data.decode())
+        self.assertEquals(reply3.get("message"), "Task successfully updated")
+        self.assertEquals(response4.status_code, 200) 
+
+    def test_unfinish_user_task_failure(self):
+        response = self.app.post("/api/users/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )                  
+        response2 = self.app.post("/api/users/login",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )
+        reply = json.loads(response2.data.decode())                  
+        response3 = self.app.post("/api/tasks/add",
+                                content_type='application/json', headers=dict(Authorization='Bearer '+reply['access_token']),
+                                data=json.dumps(dict(title="General cleaning"),)   
+                            )
+        response3 = self.app.put("/api/tasks/finish/2",content_type='application/json', headers=dict(Authorization="Bearer "+reply["access_token"]))
+        response4 = self.app.put("/api/tasks/unfinish/5",content_type='application/json', headers=dict(Authorization="Bearer "+reply["access_token"]))
+        reply3 = json.loads(response4.data.decode())
+        self.assertEquals(reply3.get("message"), "Task not updated or doesn't exist")
+        self.assertEquals(response4.status_code, 400)
+
+    def test_recover_deleted_user_task(self):
+        response = self.app.post("/api/users/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )                   
+        response2 = self.app.post("/api/users/login",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali2", email="araali@email.com", password="Ar@4ali"),)
+                                 )
+        reply = json.loads(response2.data.decode())                  
+        response3 = self.app.post("/api/tasks/add",
+                                content_type='application/json', headers=dict(Authorization='Bearer '+reply['access_token']),
+                                data=json.dumps(dict(title="General cleaning"),)   
+                            )
+        response3 = self.app.delete("/api/tasks/delete/1",content_type='application/json', headers=dict(Authorization="Bearer "+reply["access_token"]))
+        response4 = self.app.get("/api/tasks/recover",content_type='application/json', headers=dict(Authorization="Bearer "+reply["access_token"]))
+        reply2 = json.loads(response4.data.decode())
+        self.assertEquals(reply2.get("message"), "Tasks successfully recovered")
+        self.assertEquals(response4.status_code, 200)
 
     

@@ -17,6 +17,33 @@ class Test_Auth(unittest.TestCase):
         self.assertIn(("araali"),reply.get("New User Created").values())
         self.assertEquals(response.status_code, 201)
 
+    def test_registration_with_no_username(self):
+        response = self.app.post("/api/users/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="", email="araali@email.com", password="Ar$4ali"),)
+                                 )
+        reply = json.loads(response.data.decode())
+        self.assertEquals(reply.get("message"),"username is missing")
+        self.assertEquals(response.status_code, 400) 
+
+    def test_registration_with_no_password(self):
+        response = self.app.post("/api/users/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali", email="araali@email.com", password=""),)
+                                 )
+        reply = json.loads(response.data.decode())
+        self.assertEquals(reply.get("message"),"password is missing")
+        self.assertEquals(response.status_code, 400)
+
+    def test_registration_with_no_email(self):
+        response = self.app.post("/api/users/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali", email="", password=""),)
+                                 )
+        reply = json.loads(response.data.decode())
+        self.assertEquals(reply.get("message"),"email must have no white spaces")
+        self.assertEquals(response.status_code, 400)                
+
     def test_username_exists_registration(self):
         response = self.app.post("/api/users/register",
                                  content_type='application/json',
@@ -48,6 +75,32 @@ class Test_Auth(unittest.TestCase):
                                  data=json.dumps(dict(username="araali", email="araali@email.com", password="Ar$4ali"),)
                                  )
         self.assertEquals(response2.status_code, 200)
+
+    def test_user_login_with_no_username(self):
+        response = self.app.post("/api/users/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali", email="araaliemail.com", password="Ar@4ali"),)
+                                 )
+        response2 = self.app.post("/api/users/login",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="  ", email="araali@email.com", password="Ar$4ali"),)
+                                 )
+        reply2 = json.loads(response2.data.decode())
+        self.assertEquals(reply2.get("message"), "username is missing")                          
+        self.assertEquals(response2.status_code, 400)  
+
+    def test_user_login_with_no_password(self):
+        response = self.app.post("/api/users/register",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali", email="araaliemail.com", password="Ar@4ali"),)
+                                 )
+        response2 = self.app.post("/api/users/login",
+                                 content_type='application/json',
+                                 data=json.dumps(dict(username="araali", email="araali@email.com", password=""),)
+                                 )
+        reply2 = json.loads(response2.data.decode())
+        self.assertEquals(reply2.get("message"), "password is missing")                          
+        self.assertEquals(response2.status_code, 400)        
 
     def test_user_doesnt_exist_login(self):
         response = self.app.post("/api/users/register",

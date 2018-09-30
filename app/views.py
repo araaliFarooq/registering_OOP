@@ -131,11 +131,12 @@ def delete_all_tasks():
 @app.route("/api/tasks/finish/<task_id>", methods=["PUT"])
 @jwt_required
 def finish_a_task(task_id):
+    logged_user = get_jwt_identity()
     task_id = task_id
     validate = Validation.validate_input_type(task_id)
     if validate:
         return jsonify({"message": validate}), 400
-    finish_task = Task.mark_as_finished(int(task_id))
+    finish_task = Task.mark_as_finished(int(task_id), logged_user)
     if finish_task:
         return jsonify({"message": "Task successfully finished", "Updated Tasks":[     
             task for task in todo_list
@@ -145,14 +146,15 @@ def finish_a_task(task_id):
 @app.route("/api/tasks/unfinish/<task_id>", methods=["PUT"])
 @jwt_required
 def unfinish_a_task(task_id):
+    logged_user = get_jwt_identity()
     task_id = task_id
     validate = Validation.validate_input_type(task_id)
     if validate:
         return jsonify({"message": validate}), 400
-    unfinish_task = Task.mark_as_unfinished(int(task_id))
+    unfinish_task = Task.mark_as_unfinished(int(task_id),logged_user)
     if unfinish_task:
         return jsonify({"message": "Task successfully updated","Updated Tasks":[     
-            task.__dict__ for task in todo_list
+            task for task in todo_list
         ]}), 200
     return jsonify({"message": "Task not updated or doesn't exist"}), 400
 
@@ -161,10 +163,11 @@ def unfinish_a_task(task_id):
 def recover_deleted_tasks():
     logged_user = get_jwt_identity()
     list2 = [task for task in deleted_tasks if task.get('owner', '') == logged_user]
-    if list2:
+    if len(list2) > 0:
         return jsonify({"message": "Tasks successfully recovered", "Recovered Tasks":[     
-            task.__dict__ for task in list2
+            task for task in list2
         ]}), 200
+    return jsonify({"message": "No tasks recovered"}), 404    
         
         
 

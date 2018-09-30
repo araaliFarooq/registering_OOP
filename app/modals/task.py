@@ -36,10 +36,10 @@ class Task:
         return False 
 
     @staticmethod
-    def mark_as_finished(task_id):
+    def mark_as_finished(task_id, owner):
         if any(tsk["task_id"] == int(task_id) for tsk in todo_list):
             for tsk in range(len(todo_list)):
-                if todo_list[tsk]["task_id"] == int(task_id):
+                if todo_list[tsk]["task_id"] == int(task_id) and todo_list[tsk]["owner"] == owner:
                     todo_list[tsk]["status"] = "Finished"
                     return True
                 return False
@@ -48,10 +48,10 @@ class Task:
         return False
     
     @staticmethod
-    def mark_as_unfinished(task_id):
+    def mark_as_unfinished(task_id, owner):
         if any(tsk["task_id"] == int(task_id) for tsk in todo_list):
             for tsk in range(len(todo_list)):
-                if todo_list[tsk]["task_id"] == int(task_id):
+                if todo_list[tsk]["task_id"] == int(task_id) and todo_list[tsk]["owner"] == owner:
                     todo_list[tsk]["status"] = "to-do"
                     return True
                 return False
